@@ -1,0 +1,36 @@
+{
+  "changed": [
+    {"file": "libcloud/common/aws.py", "line": 275, "note": "datetime.now(timezone.utc) for AWS v4 signing"},
+    {"file": "libcloud/common/google.py", "line": 109, "note": "_utcnow() returns aware UTC datetime"},
+    {"file": "libcloud/common/openstack_identity.py", "line": 794, "note": "aware now for utctimetuple() token expiry check"},
+    {"file": "libcloud/common/osc.py", "line": 78, "note": "datetime.now(timezone.utc) for OSC v4 signing"},
+    {"file": "libcloud/dns/base.py", "line": 483, "note": "mechanical strftime only"},
+    {"file": "libcloud/dns/drivers/auroradns.py", "line": 260, "note": "aware UTC for request timestamp header"},
+    {"file": "libcloud/dns/drivers/route53.py", "line": 63, "note": "mechanical strftime only"},
+    {"file": "libcloud/storage/drivers/azure_blobs.py", "line": 640, "note": "aware UTC for SAS URL window"},
+    {"file": "libcloud/storage/drivers/s3.py", "line": 1309, "note": "aware UTC for presigned URL signing"},
+    {"file": "libcloud/test/common/test_openstack_identity.py", "line": 262, "note": "aware soon matches production expiry check"},
+    {"file": "libcloud/test/common/test_osc.py", "line": 59, "note": "mechanical strftime in assertion"},
+    {"file": "libcloud/test/dns/test_base.py", "line": 86, "note": "aware now for BIND export header regex"}
+  ],
+  "skipped": [],
+  "guesses": [
+    {
+      "file": "libcloud/common/google.py",
+      "line": 123,
+      "assumed": "_from_utc_timestamp adds tzinfo=timezone.utc so token_expire_utc_datetime compares safely with aware _utcnow() at line 786"
+    },
+    {
+      "file": "libcloud/compute/drivers/gce.py",
+      "line": 1895,
+      "assumed": "GCEZone._now() still uses utcnow(); test mock at test_gce.py:67 remains naive and matches timestamp_to_datetime (also naive)"
+    }
+  ],
+  "tests": {
+    "ran": 1819,
+    "passed": 1807,
+    "failed": 0,
+    "skipped": 12,
+    "command": "python -m pytest -q -p no:cacheprovider -p no:randomly libcloud/test/common libcloud/test/dns libcloud/test/storage libcloud/test/compute/test_gce.py"
+  }
+}
