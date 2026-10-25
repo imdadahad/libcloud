@@ -106,7 +106,7 @@ def _utcnow():
     """
     Mocked in libcloud.test.common.google.GoogleTestCase.
     """
-    return datetime.datetime.utcnow()
+    return datetime.datetime.now(datetime.timezone.utc)
 
 
 def _utc_timestamp(datetime_obj):
@@ -120,7 +120,9 @@ def _from_utc_timestamp(timestamp):
     """
     Return datetime obj where date and time are pulled from timestamp string.
     """
-    return datetime.datetime.strptime(timestamp, UTC_TIMESTAMP_FORMAT)
+    return datetime.datetime.strptime(timestamp, UTC_TIMESTAMP_FORMAT).replace(
+        tzinfo=datetime.timezone.utc
+    )
 
 
 def _get_gce_metadata(path="", retry_failed: Optional[bool] = None):
