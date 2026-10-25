@@ -1,0 +1,9 @@
+{
+  "failures": [
+    {
+      "test": "libcloud/test/compute/test_gce.py::GCEZoneNowTest::test_gce_zone_now_returns_naive_datetime_near_current_utc",
+      "cause": "GCEZone._now() was changed from datetime.utcnow() (naive UTC) to datetime.now(datetime.timezone.utc) (aware UTC), but the test asserts zone._now().tzinfo is None.",
+      "fix": "Keep using datetime.now(datetime.timezone.utc) for SEC-1042, but have _now() return naive UTC again with .replace(tzinfo=None) so the public _now() contract and test stay aligned (the strip in _get_time_until_mw can then be removed as redundant)."
+    }
+  ]
+}
