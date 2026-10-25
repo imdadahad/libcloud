@@ -1,0 +1,9 @@
+{
+  "failures": [
+    {
+      "test": "libcloud/test/compute/test_gce.py::GCEZoneNowTest::test_gce_zone_now_returns_naive_datetime_near_current_utc",
+      "cause": "GCEZone._now() in libcloud/compute/drivers/gce.py was changed from datetime.utcnow() to datetime.now(datetime.timezone.utc), which returns a timezone-aware datetime while the test and prior behavior require a naive UTC value (now.tzinfo must be None).",
+      "fix": "Keep using datetime.now(datetime.timezone.utc) but return naive UTC from _now() with .replace(tzinfo=None), and remove the next_begin tzinfo normalization in _get_time_until_mw so maintenance-window subtraction stays naive-on-naive as before."
+    }
+  ]
+}
