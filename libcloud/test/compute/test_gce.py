@@ -56,6 +56,8 @@ from libcloud.compute.drivers.gce import (
 )
 from libcloud.test.common.test_google import GoogleTestCase, GoogleAuthMockHttp
 
+_GCE_ZONE_NOW = GCEZone._now
+
 
 class GCENodeDriverTest(GoogleTestCase, TestCaseMixin):
     """
@@ -4027,6 +4029,58 @@ class GCEMockHttp(MockHttp, unittest.TestCase):
             "operations_operation_zones_us_central1_a_instanceGroups_myname_setNamedPorts.json"
         )
         return (httplib.OK, body, self.json_hdr, httplib.responses[httplib.OK])
+
+
+class GCEZoneNowTest(unittest.TestCase):
+    """
+    Exercise GCEZone._now without the fixed clock used by GCENodeDriverTest.
+    """
+
+    def setUp(self):
+        GCEZone._now = _GCE_ZONE_NOW
+
+    def tearDown(self):
+        GCEZone._now = lambda zone: datetime.datetime(2013, 6, 26, 19, 0, 0)
+
+    def _make_zone(self, maintenance_windows=None):
+        return GCEZone(
+            id="1",
+            name="test-zone",
+            status="UP",
+            maintenance_windows=maintenance_windows or [],
+            deprecated=None,
+            driver=None,
+        )
+
+    def test_gce_zone_now_returns_naive_datetime_near_current_utc(self):
+        zone = self._make_zone()
+        before = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+        now = zone._now()
+        after = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+        self.assertIsInstance(now, datetime.datetime)
+        self.assertIsNone(now.tzinfo)
+        self.assertGreaterEqual(now, before)
+        self.assertLessEqual(now, after)
+
+    def test_gce_zone_time_until_mw_uses_current_time(self):
+        reference = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+        offset = datetime.timedelta(hours=3, minutes=15)
+        begin = reference + offset
+        end = begin + datetime.timedelta(hours=1)
+        time_fmt = "%Y-%m-%dT%H:%M:%S"
+        maintenance_windows = [
+            {
+                "name": "test-window",
+                "description": "test",
+                "beginTime": begin.strftime(time_fmt) + ".000+00:00",
+                "endTime": end.strftime(time_fmt) + ".000+00:00",
+            }
+        ]
+        zone = self._make_zone(maintenance_windows=maintenance_windows)
+        delta = zone.time_until_mw
+        self.assertIsInstance(delta, datetime.timedelta)
+        self.assertGreater(delta, offset - datetime.timedelta(seconds=5))
+        self.assertLess(delta, offset + datetime.timedelta(seconds=5))
 
 
 if __name__ == "__main__":
