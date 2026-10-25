@@ -1892,7 +1892,7 @@ class GCEZone(NodeLocation):
         Can be overridden in unittests.
         """
 
-        return datetime.datetime.now(datetime.timezone.utc)
+        return datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
 
     def _get_next_maint(self):
         """
@@ -1938,8 +1938,6 @@ class GCEZone(NodeLocation):
         if not next_window:
             return None
         now = self._now()
-        if now.tzinfo is not None:
-            now = now.replace(tzinfo=None)
         next_begin = timestamp_to_datetime(next_window["beginTime"])
 
         return next_begin - now

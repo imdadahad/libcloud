@@ -4,7 +4,7 @@
     {"file": "libcloud/common/google.py", "line": 109, "note": "_utcnow() returns timezone-aware UTC"},
     {"file": "libcloud/common/openstack_identity.py", "line": 794, "note": "datetime.datetime.utcnow() -> now(timezone.utc)"},
     {"file": "libcloud/common/osc.py", "line": 78, "note": "datetime.utcnow() -> datetime.now(timezone.utc)"},
-    {"file": "libcloud/compute/drivers/gce.py", "line": 1895, "note": "GCEZone._now() returns timezone-aware UTC"},
+    {"file": "libcloud/compute/drivers/gce.py", "line": 1895, "note": "now(timezone.utc).replace(tzinfo=None) preserves naive UTC return type of utcnow()"},
     {"file": "libcloud/dns/base.py", "line": 483, "note": "mechanical strftime-only"},
     {"file": "libcloud/dns/drivers/auroradns.py", "line": 260, "note": "strftime-only downstream"},
     {"file": "libcloud/dns/drivers/route53.py", "line": 63, "note": "mechanical strftime-only"},
@@ -17,7 +17,6 @@
   "skipped": [],
   "guesses": [
     {"file": "libcloud/common/google.py", "line": 123, "assumed": "_from_utc_timestamp adds UTC tzinfo so token_expire_utc_datetime compares with aware _utcnow() at line 786"},
-    {"file": "libcloud/compute/drivers/gce.py", "line": 1941, "assumed": "strip tzinfo from aware _now() before subtracting naive timestamp_to_datetime result"},
-    {"file": "libcloud/test/compute/test_gce.py", "line": 67, "assumed": "GCEZone._now mock uses UTC-aware datetime to match production _now()"}
+    {"file": "libcloud/compute/drivers/gce.py", "line": 1895, "assumed": "replace(tzinfo=None) after now(timezone.utc) keeps _now() naive UTC like utcnow() for callers and tests"}
   ]
 }
