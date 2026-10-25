@@ -1,0 +1,22 @@
+{
+  "tests_added": [
+    {
+      "file": "libcloud/test/compute/test_gce.py",
+      "test": "GCEZoneNowTest.test_gce_zone_now_returns_naive_datetime_near_current_utc",
+      "covers": ["libcloud/compute/drivers/gce.py:1895"]
+    },
+    {
+      "file": "libcloud/test/compute/test_gce.py",
+      "test": "GCEZoneNowTest.test_gce_zone_time_until_mw_uses_current_time",
+      "covers": ["libcloud/compute/drivers/gce.py:1895"]
+    }
+  ],
+  "unreachable": [],
+  "tests": {
+    "ran": 1821,
+    "passed": 1809,
+    "failed": 0,
+    "skipped": 12,
+    "command": "python -m pytest -q -p no:cacheprovider -p no:randomly libcloud/test/common libcloud/test/dns libcloud/test/storage libcloud/test/compute/test_gce.py"
+  }
+}
