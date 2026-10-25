@@ -64,7 +64,7 @@ class GCENodeDriverTest(GoogleTestCase, TestCaseMixin):
 
     # Mock out a few specific calls that interact with the user, system or
     # environment.
-    GCEZone._now = lambda x: datetime.datetime(2013, 6, 26, 19, 0, 0, tzinfo=datetime.timezone.utc)
+    GCEZone._now = lambda x: datetime.datetime(2013, 6, 26, 19, 0, 0)
     datacenter = "us-central1-a"
 
     def setUp(self):
