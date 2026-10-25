@@ -56,6 +56,68 @@ from libcloud.compute.drivers.gce import (
 )
 from libcloud.test.common.test_google import GoogleTestCase, GoogleAuthMockHttp
 
+_GCEZone_real_now = GCEZone._now
+_GCEZone_stub_now = lambda x: datetime.datetime(2013, 6, 26, 19, 0, 0)
+
+
+class GCEZoneNowTest(unittest.TestCase):
+    """
+    Exercise GCEZone._now without the GCENodeDriverTest stub.
+    """
+
+    def setUp(self):
+        self._previous_now = GCEZone._now
+        GCEZone._now = _GCEZone_real_now
+
+    def tearDown(self):
+        GCEZone._now = self._previous_now
+
+    def test_gce_zone_now_returns_naive_datetime_near_current_utc(self):
+        zone = GCEZone(
+            id="1",
+            name="test-zone",
+            status="UP",
+            maintenance_windows=[],
+            deprecated=None,
+            driver=None,
+        )
+        lower = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+        observed = zone._now()
+        upper = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+
+        self.assertIsInstance(observed, datetime.datetime)
+        self.assertIsNone(observed.tzinfo)
+        self.assertGreaterEqual(observed, lower)
+        self.assertLessEqual(observed, upper)
+
+    def test_gce_zone_time_until_mw_subtracts_now_from_next_begin(self):
+        reference = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+        begin = reference + datetime.timedelta(hours=3)
+        begin_time = begin.strftime("%Y-%m-%dT%H:%M:%S.000+00:00")
+        maintenance_windows = [
+            {
+                "name": "planned-outage",
+                "description": "maintenance zone",
+                "beginTime": begin_time,
+                "endTime": (begin + datetime.timedelta(days=1)).strftime(
+                    "%Y-%m-%dT%H:%M:%S.000+00:00"
+                ),
+            }
+        ]
+        zone = GCEZone(
+            id="2",
+            name="test-zone-mw",
+            status="UP",
+            maintenance_windows=maintenance_windows,
+            deprecated=None,
+            driver=None,
+        )
+
+        delta = zone.time_until_mw
+        self.assertIsInstance(delta, datetime.timedelta)
+        self.assertGreater(delta, datetime.timedelta(hours=2, minutes=59))
+        self.assertLess(delta, datetime.timedelta(hours=3, minutes=1))
+
 
 class GCENodeDriverTest(GoogleTestCase, TestCaseMixin):
     """
@@ -64,7 +126,7 @@ class GCENodeDriverTest(GoogleTestCase, TestCaseMixin):
 
     # Mock out a few specific calls that interact with the user, system or
     # environment.
-    GCEZone._now = lambda x: datetime.datetime(2013, 6, 26, 19, 0, 0)
+    GCEZone._now = _GCEZone_stub_now
     datacenter = "us-central1-a"
 
     def setUp(self):
