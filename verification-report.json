@@ -17,6 +17,6 @@
     "passed": 1809,
     "failed": 0,
     "skipped": 12,
-    "command": "python3 -m pytest -q -p no:cacheprovider -p no:randomly libcloud/test/common libcloud/test/dns libcloud/test/storage libcloud/test/compute/test_gce.py"
+    "command": "python -m pytest -q -p no:cacheprovider -p no:randomly libcloud/test/common libcloud/test/dns libcloud/test/storage libcloud/test/compute/test_gce.py"
   }
 }
