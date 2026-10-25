@@ -1,0 +1,23 @@
+{
+  "changed": [
+    {"file": "libcloud/common/aws.py", "line": 275, "note": "datetime.utcnow() -> datetime.now(timezone.utc)"},
+    {"file": "libcloud/common/google.py", "line": 109, "note": "_utcnow() returns aware UTC datetime"},
+    {"file": "libcloud/common/openstack_identity.py", "line": 794, "note": "utctimetuple() on aware UTC now"},
+    {"file": "libcloud/common/osc.py", "line": 78, "note": "datetime.utcnow() -> datetime.now(timezone.utc)"},
+    {"file": "libcloud/compute/drivers/gce.py", "line": 1895, "note": "GCEZone._now() returns aware UTC datetime"},
+    {"file": "libcloud/dns/base.py", "line": 483, "note": "mechanical strftime; output unchanged"},
+    {"file": "libcloud/dns/drivers/auroradns.py", "line": 260, "note": "aware UTC for request signing timestamp"},
+    {"file": "libcloud/dns/drivers/route53.py", "line": 63, "note": "mechanical strftime; output unchanged"},
+    {"file": "libcloud/storage/drivers/azure_blobs.py", "line": 640, "note": "datetime.utcnow() -> datetime.now(timezone.utc)"},
+    {"file": "libcloud/storage/drivers/s3.py", "line": 1309, "note": "datetime.utcnow() -> datetime.now(timezone.utc)"},
+    {"file": "libcloud/test/common/test_openstack_identity.py", "line": 262, "note": "aware UTC for auth_token_expires fixture"},
+    {"file": "libcloud/test/common/test_osc.py", "line": 59, "note": "mechanical strftime; output unchanged"},
+    {"file": "libcloud/test/dns/test_base.py", "line": 86, "note": "aware UTC for export header assertion"}
+  ],
+  "skipped": [],
+  "guesses": [
+    {"file": "libcloud/common/google.py", "line": 123, "assumed": "_from_utc_timestamp strptime values are UTC; added tzinfo=timezone.utc so token_expire_utc_datetime compares correctly with aware _utcnow() at line 786"},
+    {"file": "libcloud/compute/drivers/gce.py", "line": 1942, "assumed": "timestamp_to_datetime returns naive UTC instants; attach timezone.utc before subtracting aware _now() in _get_time_until_mw"},
+    {"file": "libcloud/test/compute/test_gce.py", "line": 67, "assumed": "GCEZone._now mock must be timezone-aware UTC to match production _now() for timedelta arithmetic"}
+  ]
+}
